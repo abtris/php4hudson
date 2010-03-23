@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="phphudson" default="build" basedir=".">
+    <description>
+        Hudson build: $Id: hudson.xml,v 9a377cbd8722 2009/07/20 13:58:14 ladislav $
+    </description>
+    
+    <property name="builddir" location="/tmp/${ant.project.name}-build" />
+    
+    <target name="build" depends="project-build-prepare,revision,php-doc,php-codesniffer,php-unit,google-code-build,clean"/>
+
+    <target name="project-build-prepare">
+        <mkdir dir="${builddir}/build"/>
+        <mkdir dir="${builddir}/build/api"/>
+        <mkdir dir="${builddir}/build/coverage"/>
+        <mkdir dir="${builddir}/build/logs"/>
+    </target>
+
+   <target name="revision">
+       <exec executable="hg" dir="${ws}" output="${builddir}/revision" >
+	     <arg value="tip"/>
+       </exec>
+       <exec executable="grep" output="${builddir}/grepinfo">
+         <arg value="changeset" />
+         <arg value="${builddir}/revision" />
+       </exec>
+       <exec executable="gawk" outputproperty="REV">
+         <arg value='{match($2,"^(.*):",arr); print arr[1] }'/>
+         <arg value="${builddir}/grepinfo"/>
+       </exec>
+         <echo message="REV: ${REV}" />
+       
+   </target>
+
+    <target name="php-doc">
+        <exec executable="phpdoc" dir="${basedir}" logerror="on">
+		<arg line="--title '${ant.project.name}' -ue on -t '${builddir}/build/api' -d '${ws}'  -o HTML:frames:default -pp -s"/>
+        </exec>
+    </target>
+    <target name="php-codesniffer">
+        <exec executable="phpcs" dir="${ws}" output="${builddir}/build/logs/checkstyle.xml" error="${builddir}/build/logs/checkstyle.error.log">
+            <arg line="--report=checkstyle --standard=ZEND '${ws}'"/>
+        </exec>
+    </target>
+    <target name="php-unit">
+        <exec executable="phpunit" dir="${ws}" logerror="on">
+            <arg line="--log-xml '${builddir}/build/logs/phpunit.xml' 
+                 --log-pmd '${builddir}/build/logs/phpunit.pmd.xml' 
+                 --log-metrics '${builddir}/build/logs/phpunit.metrics.xml' 
+                 --coverage-xml '${builddir}/build/logs/phpunit.coverage.xml' 
+                 --coverage-html '${builddir}/build/coverage' 
+		 tests/"/>
+        </exec>
+    </target>
+    
+    
+    <target name="google-code-build">
+        <zip destfile="${builddir}/phphudson-apidocs-${REV}.zip"
+                basedir="${builddir}/build/api/" />
+            <exec executable="hg">
+                <arg value="archive"/>
+                <arg value="-t" />
+                <arg value="zip"/>
+                <arg value="${builddir}/phphudson-source-${REV}.zip" />
+            </exec>
+    </target>
+    
+  <target name="clean">
+    <!-- Delete the ${build} directory trees -->
+     <delete dir="${builddir}/build"/> 
+     <delete file="${builddir}/grepinfo"/>
+     <delete file="${builddir}/revision"/>
+  </target>
+  
+</project>

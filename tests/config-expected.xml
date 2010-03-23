@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>PhpHudson - php class</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.svn__release__mgr.JobPropertyImpl>
+      <maxRevisions>10</maxRevisions>
+    </hudson.plugins.svn__release__mgr.JobPropertyImpl>
+    <hudson.plugins.googlecode.GoogleCodeProjectProperty>
+      <googlecodeWebsite>http://code.google.com/p/php4hudson/</googlecodeWebsite>
+    </hudson.plugins.googlecode.GoogleCodeProjectProperty>
+  </properties>
+  <scm class="hudson.plugins.googlecode.scm.GoogleCodeSCM">
+    <directory>trunk</directory>
+  </scm>
+  <assignedNode>master</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <triggers class="vector"/>
+  <builders>
+    <hudson.tasks.Ant>
+      <targets>build</targets>
+      <buildFile>etc/hudson.xml</buildFile>
+      <properties>ws=$WORKSPACE</properties>
+    </hudson.tasks.Ant>
+    <hudson.tasks.Shell>
+      <command>lines=`wc -l $WORKSPACE/build/logs/phpunit.xml|awk &apos;{print $1}&apos;`
+end=`expr $lines - 1`
+sed -i &quot;$end d;3d&quot; $WORKSPACE/build/logs/phpunit.xml</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.tasks.JavadocArchiver>
+      <javadocDir>build/api</javadocDir>
+      <keepAll>false</keepAll>
+    </hudson.tasks.JavadocArchiver>
+    <hudson.tasks.junit.JUnitResultArchiver>
+      <testResults>build/logs/phpunit.xml</testResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
+  </publishers>
+  <buildWrappers/>
+</project>
