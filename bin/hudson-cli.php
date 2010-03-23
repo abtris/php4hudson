@@ -40,6 +40,7 @@ try {
         'output|o=s'=> 'output path',
         'configs|c'   => 'get Hudson Configs',
         'jobs|j'      => 'print jobs list',
+        'search|s=s'    => 'search job',
         'debug|d'     => 'debug'
         )
     );
@@ -93,6 +94,11 @@ if (isset($opts->o)) {
 // jobs
 if (isset($opts->j)) {
     php4hudsonUI::printListJobs($host, $username, $password, $debug);    
+}
+// search
+if (isset($opts->s)) {
+    $string = $opts->s;
+    php4hudsonUI::searchJobs($host, $username, $password, $debug, $string);
 }
 // config
 if (isset($opts->c)) {

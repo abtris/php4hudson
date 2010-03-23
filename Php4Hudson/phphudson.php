@@ -262,6 +262,24 @@ class Php4Hudson_Hudson {
                 return $jobs;
             }
     }
+
+    /**
+     * Get xml
+     * @param string $xpath
+     * @return SimpleXMLObject
+     */
+    public function getXml($xpath = null)
+    {
+            if (self::checkUrl($this->baseUrl . 'api/xml')) {
+                $this->_xml = simplexml_load_file($this->baseUrl . 'api/xml');
+                if (is_null($xpath)) {
+                    return $this->_xml;
+                } else {
+                    return $this->_xml->xpath($xpath);
+                }
+            }
+    }
+
     /**
      * get All Jobs Configs
      * @param string $dir output directory

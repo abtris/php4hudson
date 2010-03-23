@@ -19,6 +19,22 @@
  */
 class php4hudsonUI {
     /**
+     * searchJobs
+     * @param <type> $host
+     * @param <type> $username
+     * @param <type> $password
+     * @param <type> $debug 
+     */
+    public static function searchJobs($host,  $username,  $password,  $debug, $string)
+    {
+        $hudson = new Php4Hudson_Hudson($host, $username, $password, $debug);
+        $list = $hudson->getXml("job/name[contains(.,'{$string}')]/parent::*");
+        foreach ($list as $i) {
+            echo $i->name."\n";
+        }
+        
+    }
+    /**
      * Print version
      */
     public static function printVersion()
