@@ -20,10 +20,10 @@
 class php4hudsonUI {
     /**
      * searchJobs
-     * @param <type> $host
-     * @param <type> $username
-     * @param <type> $password
-     * @param <type> $debug 
+     * @param string $host
+     * @param string $username
+     * @param string $password
+     * @param bool $debug
      */
     public static function searchJobs($host,  $username,  $password,  $debug, $string)
     {
@@ -31,9 +31,39 @@ class php4hudsonUI {
         $list = $hudson->getXml("job/name[contains(.,'{$string}')]/parent::*");
         foreach ($list as $i) {
             echo $i->name."\n";
+            echo $i->url."\n";
         }
         
     }
+
+    /**
+     * get Artifact
+     * @param string $host
+     * @param string $username
+     * @param string $password
+     * @param bool $debug
+     * @param string $string
+     */
+    public static function getArtifactByName($host,  $username,  $password,  $debug, $string)
+    {
+        $hudson = new Php4Hudson_Hudson($host, $username, $password, $debug);
+        $list = $hudson->getXml("job/name[contains(.,'{$string}')]/parent::*");
+        foreach ($list as $i) {
+            echo $i->name."\n";            
+            $job = $hudson->getXml(null, $i->url);
+            $stable = $hudson->getXml(null, $job->lastStableBuild->url);
+            // artifacts
+            foreach ($stable->artifact as $j) {
+                if (!empty($j->relativePath)) {
+                $artifact = $job->lastStableBuild->url.'/artifact/'.$j->relativePath;
+                echo $artifact."\n";
+                }
+            }
+
+        }
+        
+    }
+
     /**
      * Print version
      */

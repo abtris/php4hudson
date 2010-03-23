@@ -266,12 +266,17 @@ class Php4Hudson_Hudson {
     /**
      * Get xml
      * @param string $xpath
+     * @param string $url
      * @return SimpleXMLObject
      */
-    public function getXml($xpath = null)
+    public function getXml($xpath = null, $url = null)
     {
-            if (self::checkUrl($this->baseUrl . 'api/xml')) {
-                $this->_xml = simplexml_load_file($this->baseUrl . 'api/xml');
+            if (is_null($url)) {
+                $url = $this->baseUrl;
+            }
+
+            if (self::checkUrl($url . 'api/xml')) {
+                $this->_xml = simplexml_load_file($url . 'api/xml');
                 if (is_null($xpath)) {
                     return $this->_xml;
                 } else {

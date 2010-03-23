@@ -41,6 +41,7 @@ try {
         'configs|c'   => 'get Hudson Configs',
         'jobs|j'      => 'print jobs list',
         'search|s=s'    => 'search job',
+        'artifact|a=s'   => 'get artifacts for job',
         'debug|d'     => 'debug'
         )
     );
@@ -99,6 +100,11 @@ if (isset($opts->j)) {
 if (isset($opts->s)) {
     $string = $opts->s;
     php4hudsonUI::searchJobs($host, $username, $password, $debug, $string);
+}
+// artifact
+if (isset($opts->a)) {
+    $string = $opts->a;
+    php4hudsonUI::getArtifactByName($host, $username, $password, $debug, $string);
 }
 // config
 if (isset($opts->c)) {
