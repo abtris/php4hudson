@@ -169,15 +169,13 @@ class Php4Hudson_Hudson {
 	 * @return string
 	 */
 	public function getLastSuccessfulDate($url) {
-		echo $url . 'lastSuccessfulBuild/api/xml' . "\n";
-		//if (file_exists($url . 'lastSuccessfulBuild/api/xml')) {
-		$this->xml = @simplexml_load_file($url . 'lastSuccessfulBuild/api/xml');
-		//var_dump($this->xml);
-		if (isset($this->xml)) {
-			return $this->xml->timestamp;
-		} else {
-			return false;
-		}
+        if ($this->checkUrl($url. 'lastSuccessfulBuild/api/xml')) {
+            $this->xml = simplexml_load_file($url . 'lastSuccessfulBuild/api/xml');
+            if (isset($this->xml)) {
+                return date(DATE_RFC822, (int) $this->xml->timestamp[0]);
+            }
+        }
+        return false;
 	}
     /**
      * Create job by REST $baseUrl.'createItem?name=$newJobName'
@@ -266,7 +264,7 @@ class Php4Hudson_Hudson {
         
                 $this->_xml = simplexml_load_file($this->baseUrl . 'api/xml');
                 foreach ($this->_xml->job as $i) {
-                    if (is_null($select)) {
+                    if (is_null($select) || $select=="name") {
                         $jobs[] = $i->name;
                     } elseif ($select == "url") {
                         $jobs[] = $i->url;

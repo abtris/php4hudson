@@ -77,15 +77,56 @@ class php4hudsonUI {
     public static function printListJobs($host, $username, $password, $debug)
     {
         $hudson = new Php4Hudson_Hudson($host, $username, $password, $debug);
-        $list = $hudson->getJobsList("url");
+        $list = $hudson->getJobsList();
         if (!empty($list)) {
             print "Jobs list:\n\n";
             foreach ($list as $i) {
-				print $hudson->getLastSuccessfulDate($i) ." - " . $i."\n";
+				print $i."\n";
             }
         } else {
             print "No jobs available on ".$host."\n";
         }
+    }
+    /**
+     * List jobs
+     * @static
+     * @param string $host
+     * @param string $username
+     * @param string $password
+     * @param bool $debug
+     * @param array $options
+     * @return void
+     */
+    public static function listJobs($host, $username, $password, $debug, $options)
+    {
+        // filter
+        //strtotime
+        if (!isset($options['select'])) {
+            $options['select'] = "url";
+        }
+        $hudson = new Php4Hudson_Hudson($host, $username, $password, $debug);
+        $list = $hudson->getJobsList("both");
+        if (!empty($list)) {
+            print "Jobs list:\n\n";
+            foreach ($list as $i) {
+                switch ($options['select']) {
+                    case "url":
+                        $out = $i['url'];
+                        break;
+                    case "name":
+                        $out = $i['name'];
+                        break;
+                }
+                if (isset($options['date'])) {
+				    print ($hudson->getLastSuccessfulDate($i['url'])) ? $hudson->getLastSuccessfulDate($i['url']) ." - " . $out."\n" : $out."\n";
+                } else {
+                    print $out."\n";
+                }
+            }
+        } else {
+            print "No jobs available on ".$host."\n";
+        }
+
     }
     /**
      * Get configs to directory

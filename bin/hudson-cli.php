@@ -46,11 +46,28 @@ try {
         'output|o=s'=> 'output path',
         'configs|c'   => 'get Hudson Configs',
         'jobs|j'      => 'print jobs list',
+        'list|l'      => 'list jobs with options',
         'search|s=s'    => 'search job',
         'artifact|a=s'   => 'get artifacts for job',
         'debug|d'     => 'debug'
         )
     );
+
+    $opts->addRules(
+        array(
+            'select=s' => "List type select url, job, both",
+            'date'   => "Print with dates",
+            'since=s'  => "Filter by date example."
+        )
+    );
+    $opts->setHelp(
+        array(
+            'select' => 'type of select option are url, job, both',
+            'date' => "date on/off",
+            'since' => "since option with required date param"
+        )
+    );
+
     $opts->parse();
 } catch (Zend_Console_Getopt_Exception $e) {
     exit($e->getMessage() ."\n\n". $e->getUsageMessage());
@@ -103,6 +120,13 @@ if (isset($opts->o)) {
 // jobs
 if (isset($opts->j)) {
     php4hudsonUI::printListJobs($host, $username, $password, $debug);    
+}
+// list
+if (isset($opts->l)) {
+    $options = array();
+    $options['select'] = $opts->select;
+    $options['date'] = $opts->date;
+    php4hudsonUI::listJobs($host, $username, $password, $debug, $options);
 }
 // search
 if (isset($opts->s)) {
