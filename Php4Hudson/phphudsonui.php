@@ -77,11 +77,11 @@ class php4hudsonUI {
     public static function printListJobs($host, $username, $password, $debug)
     {
         $hudson = new Php4Hudson_Hudson($host, $username, $password, $debug);
-        $list = $hudson->getJobsList();
+        $list = $hudson->getJobsList("url");
         if (!empty($list)) {
             print "Jobs list:\n\n";
             foreach ($list as $i) {
-                print $i."\n";
+				print $hudson->getLastSuccessfulDate($i) ." - " . $i."\n";
             }
         } else {
             print "No jobs available on ".$host."\n";
