@@ -23,8 +23,8 @@ require_once('Zend/Console/Getopt/Exception.php');
 /**
  * Command line client for php4hudson
  */
-require_once ("../Php4Hudson/phphudson.php");
-require_once ("../Php4Hudson/phphudsonui.php");
+require_once (__DIR__ ."/../Php4Hudson/phphudson.php");
+require_once (__DIR__ ."/../Php4Hudson/phphudsonui.php");
 /**
  * Try  processing Zend_Console_Getopt
  */
