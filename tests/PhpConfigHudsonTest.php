@@ -12,10 +12,6 @@
  * @filesource
  */
 /**
- * TestCase
- */
-require_once 'PHPUnit/Framework.php';
-/**
  * Hudson library
  */
 require_once dirname(__FILE__) . '/../Php4Hudson/phphudson.php';

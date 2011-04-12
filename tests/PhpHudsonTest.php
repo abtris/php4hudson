@@ -12,13 +12,13 @@
  * @filesource
  */
 /**
- * TestCase
- */
-require_once 'PHPUnit/Framework.php';
-/**
  * Hudson library
  */
-require_once dirname(__FILE__).'/../Php4Hudson/phphudson.php';
+require_once __DIR__ . '/../Php4Hudson/phphudson.php';
+/**
+ * Hudson config
+ */
+require_once __DIR__ . '/../conf/config.php';
 /**
  * PhpHudsonTest
  * @package php4hudson
@@ -49,7 +49,7 @@ class PhpHudsonTest extends PHPUnit_Framework_TestCase
         if (! extension_loaded('curl')) {
             $this->markTestSkipped('The CURL extension is not available.');
         }
-        $this->hudson = new Php4Hudson_Hudson("http://localhost:8080/");
+        $this->hudson = new Php4Hudson_Hudson(JENKINS_URL);
         $this->config = file_get_contents(dirname(__FILE__).'/config-expected.xml');
     }
     /**
@@ -64,9 +64,11 @@ class PhpHudsonTest extends PHPUnit_Framework_TestCase
      */
     public function testCreateJob ()
     {
+          $this->assertFalse($this->hudson->checkUrl(JENKINS_URL .'/job/TestCreateJob1/'), "Job not exists");
           $res = $this->hudson->createJob("TestCreateJob1", $this->config);
-          $this->assertTrue($res);
-          $res = $this->hudson->deleteJob('http://localhost:8080/job/TestCreateJob1/');
+          $this->assertTrue($res, "Job Created");
+          $res = $this->hudson->deleteJob(JENKINS_URL .'/job/TestCreateJob1/');
+          $this->assertFalse($this->hudson->checkUrl(JENKINS_URL .'/job/TestCreateJob1/'), "Job not exists");
     }
     /**
      * testCopyJob
@@ -75,7 +77,7 @@ class PhpHudsonTest extends PHPUnit_Framework_TestCase
     public function testCopyJob ()
     {
         $res = $this->hudson->copyJob("CopyJobTest1", "PhpHudson", $this->config);
-        $this->assertTrue($res);
+        $this->assertTrue($res, "Copy job");
     }
     /**
      * testDeleteJob
@@ -83,8 +85,8 @@ class PhpHudsonTest extends PHPUnit_Framework_TestCase
      */
     public function testDeleteJob()
     {
-        $res = $this->hudson->deleteJob('http://localhost:8080/job/CopyJobTest1/');
-        $this->assertTrue($res);
+        $res = $this->hudson->deleteJob(JENKINS_URL .'/job/CopyJobTest1/');
+        $this->assertTrue($res, "Delete job");
     }
     /**
      * testSaveJobConfig
@@ -92,7 +94,7 @@ class PhpHudsonTest extends PHPUnit_Framework_TestCase
      */
     public function testSaveJobConfig ()
     {
-        $config = $this->hudson->getConfig('http://localhost:8080/job/PhpHudson/');
+        $config = $this->hudson->getConfig(JENKINS_URL . '/job/PhpHudson/');
         file_put_contents("config-sample.xml", $config);
         // check config.xml
         $this->assertFileExists('config-sample.xml');
