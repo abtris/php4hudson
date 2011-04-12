@@ -26,6 +26,12 @@ require_once('Zend/Console/Getopt/Exception.php');
 require_once (__DIR__ ."/../Php4Hudson/phphudson.php");
 require_once (__DIR__ ."/../Php4Hudson/phphudsonui.php");
 /**
+ * Config
+ */
+if (file_exists(__DIR__ . '/../conf/config.php')) {
+	require_once(__DIR__. '/../conf/config.php');
+}
+/**
  * Try  processing Zend_Console_Getopt
  */
 try {
@@ -76,6 +82,8 @@ if (isset($opts->p)) {
 // host
 if (isset($opts->h)) {
     $host = $opts->h;
+} elseif (defined("JENKINS_URL")) {
+	$host = JENKINS_URL;
 } else {
     print "Error url to Hudson must be set!\n";
     exit;
